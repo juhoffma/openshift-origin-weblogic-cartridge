@@ -1,0 +1,60 @@
+---
+Name: weblogic
+Cartridge-Short-Name: WEBLOGIC
+Display-Name: Oracle Weblogic Application Server for Developers
+Description: Oracle Weblogic Application Server for Developers provides access to the development runtime when production runtime capabilities matter. It is a no-charge development runtime. This software helps to enable faster, more efficient development of applications and services, and is available without the expense of a priced and supported runtime on the developer’s desktop.
+Version: '12.1.3'
+License: Commercial
+License-Url: http://www.oracle.com/technetwork/licenses/standard-license-152015.html
+Vendor: hoffmann
+Cartridge-Version: 0.0.1
+Compatible-Versions: []
+Cartridge-Vendor: hoffmann
+Categories:
+- service
+- web_framework
+- java
+- oracle
+- java_ee_6
+- wls
+Website: http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
+Help-Topics:
+  Developer Center: https://www.openshift.com/developers
+Provides:
+- oracle-12.1.3
+- oracle
+- oracle-unmanaged
+Publishes:
+Subscribes:
+  set-env:
+    Type: ENV:*
+    Required: false
+  set-doc-url:
+    Type: STRING:urlpath
+    Required: false
+Scaling:
+  Min: 1
+  Max: 1
+Endpoints:
+- Private-IP-Name: IP
+  Private-Port-Name: WL_DEFAULTHOST_PORT
+  Private-Port: 7001
+  Public-Port-Name: HTTP_PROXY_PORT
+  Protocols:
+  - http
+  - ws
+  Options:
+    primary: true
+  Mappings:
+  - Frontend: ''
+    Backend: ''
+    Options:
+      websocket: true
+  - Frontend: /health
+    Backend: ''
+    Options:
+      health: true
+- Private-IP-Name: IP
+  Private-Port-Name: WL_DEFAULTHTTPSHOST_PORT
+  Private-Port: 7002
+  Public-Port-Name: HTTPS_PROXY_PORT
