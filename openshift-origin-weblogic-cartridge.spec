@@ -1,6 +1,6 @@
 %global cartridgedir %{_libexecdir}/openshift/cartridges/weblogic
 
-Name: 		openshift-origin-cartridge-weblogic
+Name: 		openshift-origin-weblogic-cartridge
 Version:	12.1.3
 Release:	1%{?dist}
 Summary:	Oracle WebLogic Server is a Java EE application server developed by Oracle Corporation.
