@@ -2,8 +2,6 @@
 # WebLogic on Docker Default Domain
 #
 # Default domain 'base_domain' to be created inside the Docker image for WLS
-# 
-# author: bruno.borges@oracle.com
 # ==============================================
 
 # Open default domain template
@@ -94,7 +92,7 @@ assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeploym
 # Write the domain and close the domain template
 # ==============================================
 setOption('OverwriteDomain', 'true')
-setOption('ServerStartMode','prod')
+setOption('ServerStartMode','dev')
 
 cd('/')
 cd('NMProperties')
