@@ -21,24 +21,69 @@ export ANT_HOME="/usr/share/ant/"
 export PATH="$PATH:$JAVA_HOME/bin"
 
 echo 'Generating username and password'
-
 mkdir -p ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/servers/AdminServer/security
 domainname="server1"
 username="admin"
 password=$(generate_password)
 admin_console_url="https://${OPENSHIFT_GEAR_DNS}/console"
 
-${OPENSHIFT_WEBLOGIC_HOME}wlserver/common/bin/wlst.sh -skipWLSModuleScanning ${OPENSHIFT_WEBLOGIC_DIR}container-scripts/create-wls-domain.py
+echo "$username" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_USERNAME
+echo "$password" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD
+echo "$admin_console_url" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_CONSOLE_URL
 
-#mv ${OPENSHIFT_WEBLOGIC_DIR}container-scripts/commEnv.sh /u01/oracle/weblogic/wlserver/common/bin/commEnv.sh
+echo "${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/${OPENSHIFT_GEAR_UUID}" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY
 
-echo "username=weblogic" > ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/servers/AdminServer/security/boot.properties
-echo "password=${OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD}" >> ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/servers/AdminServer/security/boot.properties
 
-#rm /u01/create-wls-domain.py /u01/$WLS_PKG /u01/jaxrs2-template.jar && \ 
+# Create Weblogic Profile
+creation_result=`${OPENSHIFT_WEBLOGIC_HOME}wlserver/common/bin/wlst.sh -skipWLSModuleScanning ${OPENSHIFT_WEBLOGIC_DIR}container-scripts/create-wls-domain.py`
 
-echo ". ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/bin/setDomainEnv.sh" >> ${OPENSHIFT_WEBLOGIC_DIR}.bashrc
-echo "export PATH=$PATH:${OPENSHIFT_WEBLOGIC_HOME}wlserver/common/bin:${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/bin" >> ${OPENSHIFT_WEBLOGIC_DIR}.bashrc
+echo "username=${username}" > ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/security/boot.properties
+echo "password=${OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD}" >> ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/security/boot.properties
 
-#echo ". /u01/oracle/weblogic/user_projects/domains/base_domain/bin/setDomainEnv.sh" >> /root/.bashrc && \ 
-#echo "export PATH=$PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/base_domain/bin" >> /root/.bashrc
+echo ". ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/bin/setDomainEnv.sh" >> ${OPENSHIFT_WEBLOGIC_DIR}.bashrc
+echo "export PATH=$PATH:${OPENSHIFT_WEBLOGIC_HOME}wlserver/common/bin:${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/bin" >> ${OPENSHIFT_WEBLOGIC_DIR}.bashrc
+
+# Create softlink to Weblogic binary installation
+ln -s ${OPENSHIFT_WEBLOGIC_HOME} ${OPENSHIFT_WEBLOGIC_DIR}/install
+
+# Create Hot Deployment Dir
+echo "${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/${OPENSHIFT_GEAR_UUID}/autodeploy" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_DEPLOYMENT_DIR
+
+# Setup logging
+ln -s ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/logs/AdminServer.log ${OPENSHIFT_LOG_DIR}/AdminServer.log
+
+# Prepare Build and Deploy for Sample Code
+OPENSHIFT_WEBLOGIC_MAVEN_DIR="${OPENSHIFT_DATA_DIR}/maven"
+OPENSHIFT_WEBLOGIC_MAVEN_REPO_DIR="${OPENSHIFT_WEBSPHERE_MAVEN_DIR}/repository"
+mkdir ${OPENSHIFT_WEBLOGIC_MAVEN_DIR}
+mkdir ${OPENSHIFT_WEBLOGIC_MAVEN_REPO_DIR}
+cp ${OPENSHIFT_WEBLOGIC_DIR}/usr/settings.base.xml ${OPENSHIFT_WEBLOGIC_MAVEN_DIR}
+cp ${OPENSHIFT_WEBLOGIC_DIR}/usr/settings.rhcloud.xml ${OPENSHIFT_WEBLOGIC_MAVEN_DIR}
+sed -i "s|{MAVEN_REPO_PATH}|${OPENSHIFT_WEBLOGIC_MAVEN_REPO_DIR}|g" ${OPENSHIFT_WEBLOGIC_MAVEN_DIR}/settings.base.xml
+sed -i "s|{MAVEN_REPO_PATH}|${OPENSHIFT_WEBLOGIC_MAVEN_REPO_DIR}|g" ${OPENSHIFT_WEBLOGIC_MAVEN_DIR}/settings.rhcloud.xml
+sed -i "s/{APP_NAME}/${OPENSHIFT_APP_NAME}/g" ${OPENSHIFT_WEBLOGIC_DIR}/template/pom.xml
+sed -i "s|{WEBLOGIC_ADMIN_CONSOLE_URL}|${admin_console_url}|g" ${OPENSHIFT_WEBLOGIC_DIR}/template/src/main/webapp/index.html
+
+# Create initial deployment
+pushd ${OPENSHIFT_WEBLOGIC_DIR}/template/src/main/webapp 1>/dev/null
+jar cvf ${OPENSHIFT_WEBLOGIC_DEPLOYMENT_DIR}/ROOT.war ./*
+popd 1> /dev/null
+
+# Finalize
+client_result "######################################################################"
+client_result "$creation_result"
+client_result "######################################################################"
+
+echo ''
+echo '######################################################################'
+echo '######################################################################'
+echo ''
+
+client_result ""
+client_result "Weblogic version: ${version} created.  Please make note of these Administrative User credentials:"
+client_result ""
+client_result "       Username: $username"
+client_result "       Password: $password"
+client_result "       Admin Console: $admin_console_url"
+client_result ""
+client_result ""
