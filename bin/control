@@ -119,7 +119,7 @@ function start() {
   echo '>>> Processing action "START"...'
   if ! is_running; then
     echo "Starting ${OPENSHIFT_WEBLOGIC_SERVERNAME} using: startWebLogic.sh"
-    ${OPENSHIFT_WEBLOGIC_PROFILE}/bin/startServer.sh
+    ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/bin/startWebLogic.sh
 
     # Trigger initial deployment after profile creation
     # TODO: Check if this is needed
