@@ -28,8 +28,8 @@ cmo.setClientCertificateEnforced(false)
 # Define the user password for weblogic
 # =====================================
 cd('/')
-cd("Security/base_domain/User/" + os.environ["OPENSHIFT_WEBLOGIC_ADMIN_USERNAME"])
-# cd('Security/base_domain/User/weblogic')
+# cd("Security/" + os.environ["OPENSHIFT_APP_NAME"] + "/User/" + os.environ["OPENSHIFT_WEBLOGIC_ADMIN_USERNAME"])
+cd('Security/base_domain/User/weblogic')
 # cmo.setPassword("Welcome1")
 cmo.setPassword(os.environ["OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD"])
 # Please set password here before using this script, e.g. cmo.setPassword('value')

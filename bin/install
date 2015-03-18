@@ -26,8 +26,9 @@ echo 'Generating username and password'
 mkdir -p ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/servers/AdminServer/security
 domainname="server1"
 username="weblogic"
-password=$(generate_password "9" "a-zA-Z0-9")
-password="${password}1"
+#password=$(generate_password "9" "a-zA-Z0-9")
+#password="${password}1"
+password="Welcome1"
 admin_console_url="https://${OPENSHIFT_GEAR_DNS}/console"
 
 echo "$username" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_USERNAME
@@ -52,7 +53,7 @@ export OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY
 # Create Weblogic Profile
 creation_result=`${OPENSHIFT_WEBLOGIC_HOME}wlserver/common/bin/wlst.sh -skipWLSModuleScanning ${OPENSHIFT_WEBLOGIC_DIR}container-scripts/create-wls-domain.py`
 
-echo "username=${username}" > ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/security/boot.properties
+echo "username=${OPENSHIFT_WEBLOGIC_ADMIN_USERNAME}" > ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/security/boot.properties
 echo "password=${OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD}" >> ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/servers/AdminServer/security/boot.properties
 
 echo ". ${OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY}/bin/setDomainEnv.sh" >> ${OPENSHIFT_WEBLOGIC_DIR}.bashrc

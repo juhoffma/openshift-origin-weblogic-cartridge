@@ -134,7 +134,7 @@ function stop() {
   if is_running; then
     pidfile=${OPENSHIFT_WEBLOGIC_PROFILE}/logs/${OPENSHIFT_WEBLOGIC_SERVERNAME}/${OPENSHIFT_WEBLOGIC_SERVERNAME}.pid
 
-    # ${OPENSHIFT_WEBLOGIC_PROFILE}/bin/stopWebLogic.sh
+    ${OPENSHIFT_WEBLOGIC_PROFILE}/bin/stopWebLogic.sh
 
     if [ -f $pidfile ]; then
       pid=$( /bin/cat $pidfile )
