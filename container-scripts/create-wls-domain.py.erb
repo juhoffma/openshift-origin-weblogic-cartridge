@@ -28,8 +28,9 @@ cmo.setClientCertificateEnforced(false)
 # Define the user password for weblogic
 # =====================================
 cd('/')
-# cd('Security/base_domain/User/<%= ENV['OPENSHIFT_WEBLOGIC_ADMIN_USERNAME'] %>')
-cd('Security/base_domain/User/weblogic')
+cd("Security/base_domain/User/" + os.environ["OPENSHIFT_WEBLOGIC_ADMIN_USERNAME"])
+# cd('Security/base_domain/User/weblogic')
+# cmo.setPassword("Welcome1")
 cmo.setPassword(os.environ["OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD"])
 # Please set password here before using this script, e.g. cmo.setPassword('value')
 
@@ -97,12 +98,13 @@ setOption('ServerStartMode','dev')
 
 cd('/')
 cd('NMProperties')
-set('ListenAddress','<%= ENV['OPENSHIFT_WEBLOGIC_IP'] %>')
+#set('ListenAddress','<%= ENV['OPENSHIFT_WEBLOGIC_IP'] %>')
+set('ListenAddress', os.environ["OPENSHIFT_WEBLOGIC_IP"])
 set('NativeVersionEnabled', 'false')
 
 
 # TODO: Review if this needs to be placed in OPENSHIFT_DATA_DIRECTORY
-writeDomain('<%= ENV['OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY'] %>')
+writeDomain(os.environ["OPENSHIFT_WEBLOGIC_DOMAIN_DIRECTORY"])
 closeTemplate()
 
 # Enable JAX-RS 2.0 by default on this domain

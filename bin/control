@@ -172,7 +172,7 @@ function status () {
 
   exit 0
 }
-}
+
 
 case "$1" in
   build)           build ;;
