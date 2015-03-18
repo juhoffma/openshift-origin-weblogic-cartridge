@@ -27,6 +27,7 @@ mkdir -p ${OPENSHIFT_WEBLOGIC_DIR}user_projects/domains/base_domain/servers/Admi
 domainname="server1"
 username="weblogic"
 password=$(generate_password "9" "a-zA-Z0-9")
+password="${password}1"
 admin_console_url="https://${OPENSHIFT_GEAR_DNS}/console"
 
 echo "$username" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_USERNAME
