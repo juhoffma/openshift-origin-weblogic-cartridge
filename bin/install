@@ -29,7 +29,7 @@ username="weblogic"
 #password=$(generate_password "9" "a-zA-Z0-9")
 #password="${password}1"
 password="Welcome1"
-admin_console_url="https://${OPENSHIFT_GEAR_DNS}/console"
+admin_console_url="http://${OPENSHIFT_GEAR_DNS}/console"
 
 echo "$username" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_USERNAME
 echo "$password" > ${OPENSHIFT_WEBLOGIC_DIR}/env/OPENSHIFT_WEBLOGIC_ADMIN_PASSWORD
